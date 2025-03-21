@@ -159,6 +159,8 @@ body {
   height: 500px;
   perspective: 1000px;
   cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .card-inner {
@@ -169,35 +171,70 @@ body {
   transform-style: preserve-3d;
   box-shadow: var(--card-shadow);
   border-radius: var(--card-radius);
+  will-change: transform;
 }
 
 .micro-card.flipped .card-inner {
   transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
+.card-inner .card-front, 
+.card-inner .card-back {
   position: absolute;
   width: 100%;
   height: 100%;
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: var(--card-radius);
   overflow: hidden;
   background-color: var(--color-card);
 }
 
-.card-back {
+.card-inner .card-back {
   transform: rotateY(180deg);
 }
 
 .card-header {
   display: flex;
   width: 100%;
+  position: relative;
 }
 
 .card-title-area {
   flex-grow: 1;
   color: white;
   padding: 1rem;
+}
+
+.flip-button {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 5;
+  transition: background 0.2s ease;
+}
+
+.flip-button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.back-flip-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 10;
 }
 
 .bacteria-header {

@@ -29,7 +29,10 @@ export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, curre
     <div className="card-container">
       <div 
         className={`micro-card ${isFlipped ? 'flipped' : ''}`}
-        onClick={() => setIsFlipped(!isFlipped)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsFlipped(!isFlipped);
+        }}
       >
         <div className="card-inner">
           {/* Frente de la tarjeta */}
@@ -40,6 +43,16 @@ export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, curre
                 <p className="card-subtitle">{item.nombreCientifico}</p>
               </div>
               <div className="card-id">{item.id}</div>
+              <button 
+                className="flip-button"
+                onClick={(e) => {
+                  e.stopPropagation(); 
+                  setIsFlipped(!isFlipped);
+                }}
+                aria-label="Voltear tarjeta"
+              >
+                ↻
+              </button>
             </div>
             
             <div className="card-section">
@@ -62,6 +75,17 @@ export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, curre
           
           {/* Reverso de la tarjeta */}
           <div className="card-back">
+            <button 
+              className="flip-button back-flip-button"
+              onClick={(e) => {
+                e.stopPropagation(); 
+                setIsFlipped(false);
+              }}
+              aria-label="Voltear tarjeta"
+            >
+              ↻
+            </button>
+            
             <div className="card-section">
               <h3 className="section-title">Conflicto base</h3>
               <p>{item.conflictoBase}</p>
