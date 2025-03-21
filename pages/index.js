@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { getAllMicro } from '../data';
 import MicroCard from '../components/MicroCard';
 import MicroGrid from '../components/MicroGrid';
+import SearchBar from '../components/SearchBar';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -11,6 +12,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('bacterias');
   const [activeIndex, setActiveIndex] = useState(0);
   const [viewType, setViewType] = useState('grid');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Manejo de errores global
   useEffect(() => {
@@ -92,7 +94,21 @@ export default function Home() {
     return categoryMap[category] || '';
   };
 
-  const filteredItems = selectedCategory === 'todos' 
+  // Función para filtrar por búsqueda
+  const filterBySearch = (item, term) => {
+    if (!term.trim()) return true;
+    
+    const searchLower = term.toLowerCase();
+    return (
+      (item.name && item.name.toLowerCase().includes(searchLower)) ||
+      (item.description && item.description.toLowerCase().includes(searchLower)) ||
+      (item.scientificName && item.scientificName.toLowerCase().includes(searchLower)) ||
+      (item.type && item.type.toLowerCase().includes(searchLower))
+    );
+  };
+
+  // Aplicar filtros por categoría y búsqueda
+  const filteredByCategory = selectedCategory === 'todos' 
     ? microItems 
     : microItems.filter(item => {
         const prefix = getCategoryPrefix(selectedCategory);
@@ -107,6 +123,11 @@ export default function Home() {
         
         return item.id.startsWith(prefix);
       });
+      
+  // Aplicar filtro de búsqueda
+  const filteredItems = searchTerm
+    ? filteredByCategory.filter(item => filterBySearch(item, searchTerm))
+    : filteredByCategory;
 
   return (
     <div className="container">
@@ -131,6 +152,12 @@ export default function Home() {
             </button>
           ))}
         </div>
+        
+        {/* Barra de búsqueda */}
+        <SearchBar 
+          searchTerm={searchTerm} 
+          setSearchTerm={setSearchTerm} 
+        />
         
         {/* Selector de vista */}
         <div className="view-selector">
