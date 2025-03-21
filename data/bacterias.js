@@ -1,4 +1,4 @@
-export const bacteriasParte = [
+export const bacterias = [
     {
       id: "A1",
       nombre: "Estafilococo dorado",
