@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "railway:build": "next build",
-    "railway:start": "next start -p ${PORT:-8080}"
+    "railway:build": "NODE_ENV=production next build",
+    "railway:start": "NODE_ENV=production next start -p ${PORT:-8080}",
+    "vercel-build": "next build"
   },
   "dependencies": {
     "framer-motion": "^6.5.1",
