@@ -1,53 +1,97 @@
-import { useState, useEffect } from 'react';
 import Head from 'next/head';
-import MicroCard from '../components/MicroCard';
-import MicroGrid from '../components/MicroGrid';
-import SearchBar from '../components/SearchBar';
-import CategoryTabs from '../components/CategoryTabs';
+import { useEffect, useState } from 'react';
 import { getAllMicro } from '../data';
 
 export default function Home() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [viewType, setViewType] = useState("card");
-  const [selectedCategory, setSelectedCategory] = useState("bacterias");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [microItems, setMicroItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('bacterias');
 
-  // Cargar todos los microorganismos al inicio
+  // Manejo de errores global
   useEffect(() => {
-    const allItems = getAllMicro();
-    setMicroItems(allItems);
+    const handleError = (event) => {
+      console.error('Error capturado en window.onerror:', event);
+      setError('Se ha producido un error en la aplicación');
+    };
+
+    window.addEventListener('error', handleError);
     
-    // Inicializar con bacterias
-    const initialItems = allItems.filter(item => item.id.startsWith('A'));
-    setFilteredItems(initialItems);
+    return () => {
+      window.removeEventListener('error', handleError);
+    };
   }, []);
 
-  // Filtrar cuando cambia la categoría o el término de búsqueda
+  // Cargar datos con manejo de errores
   useEffect(() => {
-    filterItems();
-  }, [selectedCategory, searchTerm, microItems]);
+    try {
+      const allItems = getAllMicro();
+      setMicroItems(allItems);
+      setLoading(false);
+    } catch (e) {
+      console.error('Error al cargar datos:', e);
+      setError('Error al cargar datos');
+      setLoading(false);
+    }
+  }, []);
 
-  const filterItems = () => {
-    if (!microItems.length) return;
-    
-    let filtered = [...microItems];
-    
-    // Filtrar por categoría
-    if (selectedCategory !== 'todos') {
-      filtered = filtered.filter(item => {
-        if (selectedCategory === 'virus') {
-          return item.id.startsWith('B');
-        }
-        
-        const categoryMap = {
-          'bacterias': 'A',
-          'virusADN': 'B',
-          'virusARN': 'B',
-          'parasitos': 'C',
-          'hongos': 'D'
-        };
+  const filterByCategory = (category) => {
+    setSelectedCategory(category);
+  };
+
+  // Renderizar mensaje de error si hay uno
+  if (error) {
+    return (
+      <div className="container">
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <h2>Error en la aplicación</h2>
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ 
+              margin: '20px', 
+              padding: '10px 20px', 
+              background: '#3b82f6', 
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '5px' 
+            }}
+          >
+            Recargar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Renderizar pantalla de carga
+  if (loading) {
+    return (
+      <div className="container">
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <h2>Cargando MicroFlashcards...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Filtrar los elementos según la categoría seleccionada
+  const getCategoryPrefix = (category) => {
+    const categoryMap = {
+      'bacterias': 'A',
+      'virusADN': 'B',
+      'virusARN': 'B',
+      'parasitos': 'C',
+      'hongos': 'D',
+      'todos': ''
+    };
+    return categoryMap[category] || '';
+  };
+
+  const filteredItems = selectedCategory === 'todos' 
+    ? microItems 
+    : microItems.filter(item => {
+        const prefix = getCategoryPrefix(selectedCategory);
         
         if (selectedCategory === 'virusADN') {
           return item.id.startsWith('B') && parseInt(item.id.substring(1)) <= 18;
@@ -57,47 +101,8 @@ export default function Home() {
           return item.id.startsWith('B') && parseInt(item.id.substring(1)) > 18;
         }
         
-        return item.id.startsWith(categoryMap[selectedCategory]);
+        return item.id.startsWith(prefix);
       });
-    }
-    
-    // Filtrar por término de búsqueda
-    if (searchTerm.trim() !== '') {
-      const term = searchTerm.toLowerCase().trim();
-      filtered = filtered.filter(item => 
-        item.nombre.toLowerCase().includes(term) ||
-        (item.nombreCientifico && item.nombreCientifico.toLowerCase().includes(term))
-      );
-    }
-    
-    setFilteredItems(filtered);
-    
-    // Resetear índice al filtrar
-    if (activeIndex >= filtered.length) {
-      setActiveIndex(0);
-    }
-  };
-
-  // Cambio de categoría
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    setActiveIndex(0);
-  };
-
-  // Contar items por categoría
-  const getCounts = () => {
-    if (!microItems.length) return {};
-    
-    return {
-      bacterias: microItems.filter(i => i.id.startsWith('A')).length,
-      virusADN: microItems.filter(i => i.id.startsWith('B') && parseInt(i.id.substring(1)) <= 18).length,
-      virusARN: microItems.filter(i => i.id.startsWith('B') && parseInt(i.id.substring(1)) > 18).length,
-      virus: microItems.filter(i => i.id.startsWith('B')).length,
-      parasitos: microItems.filter(i => i.id.startsWith('C')).length,
-      hongos: microItems.filter(i => i.id.startsWith('D')).length,
-      todos: microItems.length
-    };
-  };
 
   return (
     <div className="container">
@@ -110,73 +115,51 @@ export default function Home() {
       <main className="main">
         <h1 className="title">MicroFlashcards</h1>
         
-        <SearchBar 
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
-        />
-        
-        <CategoryTabs 
-          selectedCategory={selectedCategory} 
-          onChange={handleCategoryChange} 
-          counts={getCounts()}
-        />
-        
-        <div className="view-selector">
-          <div className="view-buttons">
-            <button 
-              className={`view-button left ${viewType === 'card' ? 'active' : ''}`}
-              onClick={() => setViewType('card')}
+        {/* Versión simplificada de CategoryTabs */}
+        <div className="category-tabs">
+          {['todos', 'bacterias', 'virusADN', 'virusARN', 'parasitos', 'hongos'].map(category => (
+            <button
+              key={category}
+              className={`tab ${selectedCategory === category ? 'active' : ''}`}
+              onClick={() => filterByCategory(category)}
             >
-              Tarjeta
+              {category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
-            <button 
-              className={`view-button right ${viewType === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewType('grid')}
-            >
-              Cuadrícula
-            </button>
-          </div>
-          
-          <div className="results-count">
-            Mostrando {filteredItems.length} resultados
-          </div>
+          ))}
         </div>
         
-        {filteredItems.length === 0 ? (
-          <div className="no-results">
-            <p>No se encontraron resultados para tu búsqueda.</p>
-            <button className="clear-button" onClick={() => setSearchTerm('')}>
-              Limpiar búsqueda
-            </button>
-          </div>
-        ) : viewType === 'card' ? (
-          <MicroCard 
-            item={filteredItems[activeIndex]}
-            onNext={() => {
-              if (activeIndex < filteredItems.length - 1) {
-                setActiveIndex(activeIndex + 1);
-              }
-            }}
-            onPrev={() => {
-              if (activeIndex > 0) {
-                setActiveIndex(activeIndex - 1);
-              }
-            }}
-            isFirst={activeIndex === 0}
-            isLast={activeIndex === filteredItems.length - 1}
-            currentIndex={activeIndex}
-            totalItems={filteredItems.length}
-          />
-        ) : (
-          <MicroGrid 
-            items={filteredItems}
-            activeIndex={activeIndex}
-            onSelectItem={(index) => {
-              setActiveIndex(index);
-              setViewType('card');
-            }}
-          />
-        )}
+        {/* Lista simple de elementos */}
+        <div className="results-count">
+          Mostrando {filteredItems.length} resultados
+        </div>
+        
+        <div className="grid-container">
+          {filteredItems.map((item) => (
+            <div 
+              key={item.id}
+              className="grid-card"
+              style={{ 
+                transition: "transform 0.2s, box-shadow 0.2s"
+              }}
+            >
+              <div className={`grid-header ${getCategoryPrefix(selectedCategory) === 'A' ? 'bacteria-header' : getCategoryPrefix(selectedCategory) === 'B' ? 'virus-adn-header' : getCategoryPrefix(selectedCategory) === 'C' ? 'parasito-header' : 'hongo-header'}`}>
+                <div className="grid-title-row">
+                  <span className="grid-title">{item.nombre}</span>
+                  <span className="grid-id">{item.id}</span>
+                </div>
+                {item.nombreCientifico && (
+                  <div className="grid-subtitle">{item.nombreCientifico}</div>
+                )}
+              </div>
+              <div className="grid-body">
+                <div className="grid-type">{item.tipo}</div>
+                {item.descripcion && (
+                  <div className="grid-description">{item.descripcion.slice(0, 100)}...</div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );
