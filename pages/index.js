@@ -100,10 +100,10 @@ export default function Home() {
     
     const searchLower = term.toLowerCase();
     return (
-      (item.name && item.name.toLowerCase().includes(searchLower)) ||
-      (item.description && item.description.toLowerCase().includes(searchLower)) ||
-      (item.scientificName && item.scientificName.toLowerCase().includes(searchLower)) ||
-      (item.type && item.type.toLowerCase().includes(searchLower))
+      (item.nombre && item.nombre.toLowerCase().includes(searchLower)) ||
+      (item.descripcion && item.descripcion.toLowerCase().includes(searchLower)) ||
+      (item.nombreCientifico && item.nombreCientifico.toLowerCase().includes(searchLower)) ||
+      (item.tipo && item.tipo.toLowerCase().includes(searchLower))
     );
   };
 
@@ -132,13 +132,13 @@ export default function Home() {
   return (
     <div className="container">
       <Head>
-        <title>MicroFlashcards</title>
+        <title>Microbioenergetica Flashcards</title>
         <meta name="description" content="Flashcards de microorganismos para estudio" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className="main">
-        <h1 className="title">MicroFlashcards</h1>
+        <h1 className="title">Microbioenergetica Flashcards</h1>
         
         {/* Versión simplificada de CategoryTabs */}
         <div className="category-tabs">
@@ -213,6 +213,10 @@ export default function Home() {
             }}
           />
         )}
+        
+        <footer className="footer">
+          <p>Dr. Miguel Ojeda Rios</p>
+        </footer>
       </main>
     </div>
   );
