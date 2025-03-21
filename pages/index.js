@@ -1,12 +1,16 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { getAllMicro } from '../data';
+import MicroCard from '../components/MicroCard';
+import MicroGrid from '../components/MicroGrid';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [microItems, setMicroItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('bacterias');
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [viewType, setViewType] = useState('grid');
 
   // Manejo de errores global
   useEffect(() => {
@@ -128,38 +132,60 @@ export default function Home() {
           ))}
         </div>
         
-        {/* Lista simple de elementos */}
-        <div className="results-count">
-          Mostrando {filteredItems.length} resultados
+        {/* Selector de vista */}
+        <div className="view-selector">
+          <div className="view-buttons">
+            <button 
+              className={`view-button left ${viewType === 'card' ? 'active' : ''}`}
+              onClick={() => setViewType('card')}
+            >
+              Tarjeta
+            </button>
+            <button 
+              className={`view-button right ${viewType === 'grid' ? 'active' : ''}`}
+              onClick={() => setViewType('grid')}
+            >
+              Cuadrícula
+            </button>
+          </div>
+          
+          <div className="results-count">
+            Mostrando {filteredItems.length} resultados
+          </div>
         </div>
         
-        <div className="grid-container">
-          {filteredItems.map((item) => (
-            <div 
-              key={item.id}
-              className="grid-card"
-              style={{ 
-                transition: "transform 0.2s, box-shadow 0.2s"
-              }}
-            >
-              <div className={`grid-header ${getCategoryPrefix(selectedCategory) === 'A' ? 'bacteria-header' : getCategoryPrefix(selectedCategory) === 'B' ? 'virus-adn-header' : getCategoryPrefix(selectedCategory) === 'C' ? 'parasito-header' : 'hongo-header'}`}>
-                <div className="grid-title-row">
-                  <span className="grid-title">{item.nombre}</span>
-                  <span className="grid-id">{item.id}</span>
-                </div>
-                {item.nombreCientifico && (
-                  <div className="grid-subtitle">{item.nombreCientifico}</div>
-                )}
-              </div>
-              <div className="grid-body">
-                <div className="grid-type">{item.tipo}</div>
-                {item.descripcion && (
-                  <div className="grid-description">{item.descripcion.slice(0, 100)}...</div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        {filteredItems.length === 0 ? (
+          <div className="no-results">
+            <p>No se encontraron resultados para tu búsqueda.</p>
+          </div>
+        ) : viewType === 'card' ? (
+          <MicroCard 
+            item={filteredItems[activeIndex]}
+            onNext={() => {
+              if (activeIndex < filteredItems.length - 1) {
+                setActiveIndex(activeIndex + 1);
+              }
+            }}
+            onPrev={() => {
+              if (activeIndex > 0) {
+                setActiveIndex(activeIndex - 1);
+              }
+            }}
+            isFirst={activeIndex === 0}
+            isLast={activeIndex === filteredItems.length - 1}
+            currentIndex={activeIndex}
+            totalItems={filteredItems.length}
+          />
+        ) : (
+          <MicroGrid 
+            items={filteredItems}
+            activeIndex={activeIndex}
+            onSelectItem={(index) => {
+              setActiveIndex(index);
+              setViewType('card');
+            }}
+          />
+        )}
       </main>
     </div>
   );
