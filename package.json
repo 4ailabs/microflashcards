@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build && next export",
+    "start": "npx serve out",
     "lint": "next lint",
-    "railway:build": "NODE_ENV=production next build",
-    "railway:start": "NODE_ENV=production next start -p ${PORT:-8080}",
-    "vercel-build": "next build"
+    "railway:build": "next build && next export",
+    "railway:start": "npx serve -s out -p ${PORT:-8080}",
+    "vercel-build": "next build && next export"
   },
   "dependencies": {
     "framer-motion": "^6.5.1",

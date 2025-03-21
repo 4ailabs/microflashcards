@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import IconRenderer from './IconRenderer';
+// Importación condicional para solucionar problemas con SSR
+const IconRenderer = dynamic(() => import('./IconRenderer'), { ssr: false });
+import dynamic from 'next/dynamic';
 
 export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, currentIndex, totalItems }) {
   const [isFlipped, setIsFlipped] = useState(false);

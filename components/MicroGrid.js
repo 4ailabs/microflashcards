@@ -1,4 +1,7 @@
-import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+// Forma simplificada para el despliegue
+// Eliminamos framer-motion temporalmente
+// const motion = dynamic(() => import('framer-motion').then(mod => mod.motion), { ssr: false });
 
 export default function MicroGrid({ items, activeIndex, onSelectItem }) {
   const getCategoryClass = (id) => {
@@ -19,12 +22,11 @@ export default function MicroGrid({ items, activeIndex, onSelectItem }) {
   return (
     <div className="grid-container">
       {items.map((item, index) => (
-        <motion.div 
+        <div 
           key={item.id}
           className={`grid-card ${index === activeIndex ? 'active' : ''}`}
-          whileHover={{ 
-            scale: 1.03,
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
+          style={{ 
+            transition: "transform 0.2s, box-shadow 0.2s"
           }}
           onClick={() => onSelectItem(index)}
         >
@@ -43,7 +45,7 @@ export default function MicroGrid({ items, activeIndex, onSelectItem }) {
               <div className="grid-description">{item.descripcion}</div>
             )}
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
   );
