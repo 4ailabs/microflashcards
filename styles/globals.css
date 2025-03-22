@@ -1,9 +1,13 @@
 :root {
+  /* Colores compartidos */
   --color-bacteria: #3b82f6;
   --color-virus-adn: #f59e0b;
   --color-virus-arn: #ef4444;
   --color-parasito: #10b981;
   --color-hongo: #14b8a6;
+  --card-radius: 8px;
+  
+  /* Tema claro (default) */
   --color-background: #f8fafc;
   --color-card: #ffffff;
   --color-text: #111827;
@@ -11,7 +15,24 @@
   --color-border: #e2e8f0;
   --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   --card-shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --card-radius: 8px;
+  --input-background: #ffffff;
+  --hover-background: rgba(0, 0, 0, 0.03);
+  --overlay-background: rgba(0, 0, 0, 0.05);
+  --button-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --color-background: #111827;
+  --color-card: #1f2937;
+  --color-text: #f3f4f6;
+  --color-text-light: #9ca3af;
+  --color-border: #374151;
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --input-background: #1f2937;
+  --hover-background: rgba(255, 255, 255, 0.05);
+  --overlay-background: rgba(255, 255, 255, 0.03);
+  --button-text: #ffffff;
 }
 
 * {
@@ -26,6 +47,7 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: var(--color-background);
   color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -164,8 +186,8 @@ body {
   border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background-color: var(--input-background);
+  box-shadow: var(--card-shadow);
   transition: all 0.3s ease;
 }
 
@@ -189,6 +211,7 @@ body {
   font-size: 0.95rem;
   color: var(--color-text);
   background: transparent;
+  caret-color: var(--color-bacteria);
 }
 
 .search-input::placeholder {
@@ -258,7 +281,8 @@ body {
   padding: 0.5rem 1rem;
   cursor: pointer;
   border: 1px solid var(--color-border);
-  background: white;
+  background: var(--color-card);
+  color: var(--color-text);
   font-size: 0.875rem;
   transition: all 0.2s ease;
   position: relative;
@@ -278,7 +302,7 @@ body {
 }
 
 .view-button:not(.active):hover {
-  background-color: rgba(0,0,0,0.03);
+  background-color: var(--hover-background);
 }
 
 .view-button.active {
@@ -307,7 +331,7 @@ body {
 .results-count {
   font-size: 0.875rem;
   color: var(--color-text-light);
-  background-color: rgba(0,0,0,0.03);
+  background-color: var(--hover-background);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 500;
@@ -360,7 +384,9 @@ body {
 
 @media (max-width: 480px) {
   .micro-card {
-    height: 400px;
+    min-height: 400px;
+    height: auto;
+    max-height: 80vh;
   }
 }
 
@@ -387,10 +413,20 @@ body {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: var(--card-radius);
-  overflow: hidden;
+  overflow: auto;
   background-color: var(--color-card);
   transform: translateZ(0);
   transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 480px) {
+  .card-inner .card-front,
+  .card-inner .card-back {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 .card-inner:hover .card-front,
@@ -576,7 +612,7 @@ body {
   font-size: 0.95rem;
   color: var(--color-text-light);
   font-weight: 500;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: var(--hover-background);
   padding: 0.5rem 1rem;
   border-radius: 6px;
 }
@@ -727,4 +763,41 @@ body {
   border-top: 1px solid var(--color-border);
   color: var(--color-text-light);
   font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-card);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+@media (max-width: 480px) {
+  .theme-toggle {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+  }
 }

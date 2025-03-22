@@ -4,6 +4,7 @@ import { getAllMicro } from '../data';
 import MicroCard from '../components/MicroCard';
 import MicroGrid from '../components/MicroGrid';
 import SearchBar from '../components/SearchBar';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -131,6 +132,7 @@ export default function Home() {
 
   return (
     <div className="container">
+      <ThemeToggle />
       <Head>
         <title>Microbioenergetica Flashcards</title>
         <meta name="description" content="Flashcards de microorganismos para estudio" />
