@@ -1,10 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 // Importación condicional para solucionar problemas con SSR
 const IconRenderer = dynamic(() => import('./IconRenderer'), { ssr: false });
-import dynamic from 'next/dynamic';
 
 export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, currentIndex, totalItems }) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detectar si es un dispositivo móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = window.innerWidth <= 768 || 
+                            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(isMobileDevice);
+    };
+    
+    // Verificar al cargar
+    checkMobile();
+    
+    // Verificar al cambiar el tamaño de la ventana
+    window.addEventListener('resize', checkMobile);
+    
+    // Verificar si estamos en un entorno de producción con la variable de entorno
+    if (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_MOBILE_FIX === 'true') {
+      setIsMobile(true); // Forzar modo móvil en producción
+    }
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Resetear el estado de volteo cuando cambia el item
+  useEffect(() => {
+    setIsFlipped(false);
+  }, [item]);
 
   if (!item || !item.id) {
     return <div className="no-card">No hay datos disponibles</div>;
@@ -28,7 +58,7 @@ export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, curre
   return (
     <div className="card-container">
       <div 
-        className={`micro-card ${isFlipped ? 'flipped' : ''}`}
+        className={`micro-card ${isFlipped ? 'flipped' : ''} ${isMobile ? 'mobile' : ''}`}
         onClick={(e) => {
           e.stopPropagation();
           setIsFlipped(!isFlipped);

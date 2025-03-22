@@ -9,9 +9,9 @@
     "lint": "next lint",
     "export": "next build && next export",
     "static": "npx serve out",
-    "railway:build": "next build",
+    "railway:build": "NEXT_PUBLIC_MOBILE_FIX=true next build",
     "railway:start": "next start -p ${PORT:-8080}",
-    "vercel-build": "next build"
+    "vercel-build": "NEXT_PUBLIC_MOBILE_FIX=true next build"
   },
   "dependencies": {
     "framer-motion": "^6.5.1",
