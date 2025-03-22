@@ -1,0 +1,184 @@
+/* Mejoras para la visualización de tarjetas con contenido extenso */
+
+/* Ajuste general para tarjetas */
+.micro-card {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 500px;
+  max-height: 80vh;
+  perspective: 1500px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: translateZ(0);
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+/* Mejora del contenedor interno para adaptarse al contenido */
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  box-shadow: var(--card-shadow);
+  border-radius: var(--card-radius);
+  will-change: transform;
+}
+
+/* Mejora del manejo de scroll en las caras de la tarjeta */
+.card-inner .card-front, 
+.card-inner .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: var(--card-radius);
+  background-color: var(--color-card);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  
+  /* Mejora del scroll */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Mejora para las secciones de la tarjeta */
+.card-section {
+  padding: 1rem;
+  border-top: 1px dotted var(--color-border);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+/* Ajustes específicos para dispositivos móviles */
+@media (max-width: 768px) {
+  .micro-card {
+    min-height: 450px;
+    max-height: 75vh;
+  }
+  
+  .card-inner {
+    min-height: 450px;
+  }
+  
+  .card-section {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .micro-card {
+    min-height: 400px;
+    max-height: 70vh;
+  }
+  
+  .card-inner {
+    min-height: 400px;
+  }
+  
+  .card-section {
+    padding: 0.75rem;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .section-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Solución específica para iOS */
+@supports (-webkit-touch-callout: none) {
+  .micro-card.mobile .card-inner {
+    transform-style: flat;
+    -webkit-transform-style: flat;
+  }
+  
+  .micro-card.mobile.flipped .card-front {
+    display: none;
+  }
+  
+  .micro-card.mobile:not(.flipped) .card-back {
+    display: none;
+  }
+  
+  /* Mejora adicional para iOS */
+  .micro-card.mobile .card-front,
+  .micro-card.mobile .card-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Estilos específicos para dispositivos iOS */
+html.ios-device .micro-card {
+  transform-style: flat !important;
+  -webkit-transform-style: flat !important;
+}
+
+html.ios-device .card-inner {
+  transform-style: flat !important;
+  -webkit-transform-style: flat !important;
+}
+
+html.ios-device .micro-card.flipped .card-front {
+  display: none !important;
+}
+
+html.ios-device .micro-card:not(.flipped) .card-back {
+  display: none !important;
+}
+
+html.ios-device .card-front,
+html.ios-device .card-back {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  max-height: none !important;
+}
+
+/* Mejora para el contenido de código patógeno */
+.pathogen-list {
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Mejora para la navegación */
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  width: 100%;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--color-background);
+  padding: 0.5rem 0;
+  z-index: 5;
+}

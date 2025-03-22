@@ -1,4 +1,5 @@
 import '../styles/globals.css';
+import '../styles/card-fixes.css'; // Importar mejoras para las tarjetas
 import { useEffect } from 'react';
 
 function MyApp({ Component, pageProps }) {

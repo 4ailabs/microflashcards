@@ -26,6 +26,12 @@ export default function MicroCard({ item, onNext, onPrev, isFirst, isLast, curre
       setIsMobile(true); // Forzar modo móvil en producción
     }
     
+    // Verificar si es un dispositivo iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      document.documentElement.classList.add('ios-device');
+    }
+    
     return () => {
       window.removeEventListener('resize', checkMobile);
     };

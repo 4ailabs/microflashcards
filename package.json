@@ -14,6 +14,7 @@
     "vercel-build": "NEXT_PUBLIC_MOBILE_FIX=true next build"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "framer-motion": "^6.5.1",
     "next": "^12.2.5",
     "react": "^18.2.0",
